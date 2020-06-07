@@ -17,6 +17,7 @@ services:
             - ./logs/:/var/log/nginx/
             - ./etc/nginx/conf.d/:/etc/nginx/conf.d/
             - ./etc/nginx/certs/:/etc/nginx/certs/
+            - /etc/localtime:/etc/localtime:ro
         depends_on:
             - php-fpm
             - postgres
@@ -56,6 +57,17 @@ services:
             - POSTGRES_PASSWORD=profdinho
             - TZ=GMT
         networks:
+            - app-network
+    redis:
+        container_name: redis
+        build:
+            context: ./etc/redis/
+            dockerfile: Dockerfile
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./data/redis/:/data/
+        networks: 
             - app-network
 networks:
     app-network:
