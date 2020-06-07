@@ -1,0 +1,7 @@
+FROM php:fpm
+
+LABEL maintainer="Dinho Zanardi <prof.dinho.ti@gmail.com>"
+
+RUN \
+    docker-php-ext-configure pdo_pgsql && \
+    docker-php-ext-install pdo_pgsql

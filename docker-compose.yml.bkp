@@ -1,0 +1,58 @@
+version: '3'
+services:
+    nginx:
+        container_name: nginx
+        build:
+            context: ./etc/nginx/
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+            - "443:443"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./src/public/:/var/www/html/
+            - ./logs/:/var/log/nginx/
+            - ./etc/nginx/conf.d/:/etc/nginx/conf.d/
+        depends_on:
+            - php-fpm
+            - mysql
+        networks:
+            - app-network
+    php-fpm:
+        container_name: php-fpm
+        build:
+            context: ./etc/php-fpm/
+            dockerfile: Dockerfile
+        expose:
+            - "9000"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./src/public/:/var/www/html/
+        environment:
+            SERVICE_NAME: php-fpm
+        networks:
+            - app-network
+    mysql:
+        container_name: mysql
+        build:
+            context: ./etc/mysql/
+            dockerfile: Dockerfile
+        ports:
+            - "3306:3306"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./data/mysql/:/var/lib/mysql/
+            - ./etc/mysql/my.cnf:/etc/mysql/my.cnf
+            - ./logs/my_general.log:/var/lib/mysql/general.log
+        environment:
+            MYSQL_DATABASE: profdinho
+            MYSQL_ROOT_PASSWORD: profdinho
+            SERVICE_NAME: mysql
+        networks:
+            - app-network
+networks:
+    app-network:
+        driver: bridge

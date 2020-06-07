@@ -1,0 +1,62 @@
+version: '3'
+services:
+    nginx:
+        container_name: nginx
+        build:
+            context: ./etc/nginx/
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+            - "443:443"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./src/public/:/var/www/html/
+            - ./src/5acertos/:/var/www/5acertos/html/
+            - ./src/profdinho/:/var/www/profdinho/html/
+            - ./logs/:/var/log/nginx/
+            - ./etc/nginx/conf.d/:/etc/nginx/conf.d/
+            - ./etc/nginx/certs/:/etc/nginx/certs/
+        depends_on:
+            - php-fpm
+            - postgres
+        networks:
+            - app-network
+    php-fpm:
+        container_name: php-fpm
+        build:
+            context: ./etc/php-fpm/
+            dockerfile: Dockerfile
+        expose:
+            - "9000"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./src/public/:/var/www/html/
+            - ./src/5acertos/:/var/www/5acertos/html/
+            - ./src/profdinho/:/var/www/profdinho/html/
+        environment:
+            SERVICE_NAME: php-fpm
+        networks:
+            - app-network
+    postgres:
+        container_name: postgres
+        build:
+            context: ./etc/postgres/
+            dockerfile: Dockerfile
+        ports:
+            - "5432:5432"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./data/postgresql/:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_DB=profdinho
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=profdinho
+            - TZ=GMT
+        networks:
+            - app-network
+networks:
+    app-network:
+        driver: bridge
