@@ -21,6 +21,8 @@ services:
         depends_on:
             - php-fpm
             - postgres
+            - redis
+            - springboot
         networks:
             - app-network
     php-fpm:
@@ -67,6 +69,20 @@ services:
             - "6379:6379"
         volumes:
             - ./data/redis/:/data/
+        networks: 
+            - app-network
+    springboot:
+        container_name: springboot
+        build:
+            context: ./etc/springboot
+            dockerfile: Dockerfile
+        ports: 
+            - "8080"
+        volumes:
+            - ./etc/springboot/:/etc/springboot/
+        depends_on:
+            - postgres
+            - redis
         networks: 
             - app-network
 networks:
