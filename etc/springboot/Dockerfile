@@ -8,4 +8,4 @@ ENV PROJECT_HOME /etc/springboot
 
 WORKDIR $PROJECT_HOME
 
-CMD ["java", "-jar", "-Dspring.profiles.active=prod" ,"./api.jar"]
+CMD ["java", "-Xms128m", "-Xmx256m", "-jar", "-Dspring.profiles.active=prod" ,"./api.jar"]
