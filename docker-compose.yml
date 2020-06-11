@@ -21,6 +21,7 @@ services:
         depends_on:
             - php-fpm
             - postgres
+            - mysql
             - redis
             - springboot
         networks:
@@ -38,6 +39,7 @@ services:
             - ./src/public/:/var/www/html/
             - ./src/5acertos/:/var/www/5acertos/html/
             - ./src/profdinho/:/var/www/profdinho/html/
+            - /etc/localtime:/etc/localtime:ro
         environment:
             SERVICE_NAME: php-fpm
         networks:
@@ -53,11 +55,32 @@ services:
         tty: true
         volumes:
             - ./data/postgresql/:/var/lib/postgresql/data/
+            - /etc/localtime:/etc/localtime:ro
         environment:
             - POSTGRES_DB=profdinho
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=profdinho
             - TZ=GMT
+        networks:
+            - app-network
+    mysql:
+        container_name: mysql
+        build:
+            context: ./etc/mysql/
+            dockerfile: Dockerfile
+        ports:
+            - "3306:3306"
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./data/mysql/:/var/lib/mysql/
+            - ./etc/mysql/my.cnf:/etc/mysql/my.cnf
+            - ./logs/my_general.log:/var/lib/mysql/general.log
+            - /etc/localtime:/etc/localtime:ro
+        environment:
+            MYSQL_DATABASE: profdinho
+            MYSQL_ROOT_PASSWORD: profdinho
+            SERVICE_NAME: mysql
         networks:
             - app-network
     redis:
@@ -71,6 +94,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./data/redis/:/data/
+            - /etc/localtime:/etc/localtime:ro
         networks: 
             - app-network
     springboot:
@@ -86,6 +110,7 @@ services:
         depends_on:
             - postgres
             - redis
+            - mysql
         networks: 
             - app-network
 networks:
