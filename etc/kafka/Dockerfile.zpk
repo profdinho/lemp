@@ -1,0 +1,5 @@
+FROM confluentinc/cp-zookeeper:latest
+
+LABEL maintainer="Dinho Zanardi <prof.dinho.ti@gmail.com>"
+
+EXPOSE 2181

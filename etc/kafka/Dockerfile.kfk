@@ -1,0 +1,5 @@
+FROM confluentinc/cp-kafka:latest
+
+LABEL maintainer="Dinho Zanardi <prof.dinho.ti@gmail.com>"
+
+EXPOSE 9092
