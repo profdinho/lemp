@@ -111,6 +111,7 @@ services:
             - postgres
             - redis
             - mysql
+            - kafka
         networks: 
             - app-network
     zookeeper:
